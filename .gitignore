@@ -1,0 +1,6 @@
+.yt_scraper/
+.vscode/
+__pycache__/
+yt_api_key.txt
+config.json
+client_secret*
