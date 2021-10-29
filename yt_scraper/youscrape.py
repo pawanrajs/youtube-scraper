@@ -1,7 +1,8 @@
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-import os.path
+import logging
 import json
+import sys
 
 class YouScraper:
     
@@ -25,6 +26,12 @@ class YouScraper:
         api_key = self.config.get("apiKey")
         
         self.youtube = build(service_name, service_version, developerKey=api_key)
+        
+        # Set Logging
+        # self.logger = logging.getLogger()
+        # self.logger.setLevel(logging.DEBUG)
+        # logging.basicConfig(handlers=[logging.StreamHandler(sys.stdout)])
+
 
     def get_channel_info(self, channel_id, return_info=None):
         """
@@ -76,7 +83,9 @@ class YouScraper:
                         channel_info[prop] = channel_detail[part].get(prop)
         except HttpError as httpe:
             self._handle_exception(httpe)
-        
+        finally:
+            self.youtube.close()
+
         return channel_info
 
     def search_channels(self, search_term, max_channels, **kwargs):
@@ -104,6 +113,8 @@ class YouScraper:
             except HttpError as httpe:
                 self._handle_exception(httpe)
                 break
+            finally:
+                self.youtube.close()
 
             search_result = response['items']
             for channel in search_result:
